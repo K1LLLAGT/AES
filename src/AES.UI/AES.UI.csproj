@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.3.9" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.9" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.9" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.9" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.3.9" />
+    <PackageReference Include="ReactiveUI" Version="20.1.1" />
+    <PackageReference Include="ReactiveUI.Fody" Version="19.5.41" />
+    <PackageReference Include="System.Reactive" Version="6.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="FodyWeavers.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AES.Core\AES.Core.csproj" />
+    <ProjectReference Include="..\AES.Modules.ApkLab\AES.Modules.ApkLab.csproj" />
+    <ProjectReference Include="..\AES.Modules.FirmwareLab\AES.Modules.FirmwareLab.csproj" />
+    <ProjectReference Include="..\AES.Modules.DeviceBridge\AES.Modules.DeviceBridge.csproj" />
+    <ProjectReference Include="..\AES.Modules.Analyzer\AES.Modules.Analyzer.csproj" />
+    <ProjectReference Include="..\AES.Modules.Workspace\AES.Modules.Workspace.csproj" />
+  </ItemGroup>
+</Project>

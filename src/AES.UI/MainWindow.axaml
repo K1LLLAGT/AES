@@ -1,0 +1,450 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:AES.UI.ViewModels"
+        xmlns:contracts="using:AES.Contracts.Models"
+        x:DataType="vm:MainWindowViewModel"
+        x:Class="AES.UI.MainWindow"
+        Title="AES — Android Engineering Suite"
+        Width="1400" Height="900"
+        MinWidth="1100" MinHeight="650"
+        WindowStartupLocation="CenterScreen"
+        Background="#1E1E2E">
+
+  <Grid RowDefinitions="Auto,*,200">
+
+    <!-- Menu bar -->
+    <Menu Grid.Row="0" Background="#181825">
+      <MenuItem Header="_File" Foreground="#CDD6F4">
+        <MenuItem Header="Exit" Command="{Binding ExitCommand}"/>
+      </MenuItem>
+    </Menu>
+
+    <!-- Main area: sidebar + content -->
+    <Grid Grid.Row="1" ColumnDefinitions="200,*">
+
+      <!-- Sidebar -->
+      <Border Grid.Column="0"
+              Background="#181825"
+              BorderBrush="#313244"
+              BorderThickness="0,0,1,0">
+        <StackPanel Margin="12,16,12,12">
+          <TextBlock Text="⬡ AES"
+                     FontSize="20" FontWeight="Bold"
+                     Foreground="#CBA6F7" Margin="0,0,0,24"/>
+          <TextBlock Text="MODULES"
+                     Foreground="#585B70" FontSize="10" FontWeight="Bold"
+                     Margin="0,0,0,8"/>
+          <Button Content="  Workspace"
+                  Background="Transparent" Foreground="#CDD6F4"
+                  HorizontalContentAlignment="Left" Margin="0,2"
+                  Click="OnWorkspaceClick"/>
+          <Button Content="  APK Lab"
+                  Background="Transparent" Foreground="#CDD6F4"
+                  HorizontalContentAlignment="Left" Margin="0,2"
+                  Click="OnApkLabClick"/>
+          <Button Content="  Firmware Lab"
+                  Background="Transparent" Foreground="#CDD6F4"
+                  HorizontalContentAlignment="Left" Margin="0,2"
+                  Click="OnFirmwareLabClick"/>
+          <Button Content="  Analyzer"
+                  Background="Transparent" Foreground="#CDD6F4"
+                  HorizontalContentAlignment="Left" Margin="0,2"
+                  Click="OnAnalyzerClick"/>
+          <Button Content="  Device Bridge"
+                  Background="Transparent" Foreground="#CDD6F4"
+                  HorizontalContentAlignment="Left" Margin="0,2"
+                  Click="OnDeviceBridgeClick"/>
+        </StackPanel>
+      </Border>
+
+      <!-- Tab content -->
+      <TabControl Grid.Column="1"
+                  x:Name="MainTabs"
+                  SelectedIndex="{Binding ActiveTabIndex}"
+                  Background="#1E1E2E">
+
+        <!-- ═══════════════════════════════════════════════ WORKSPACE -->
+        <TabItem Header="Workspace">
+          <Grid RowDefinitions="Auto,*" Margin="20">
+            <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,16">
+              <TextBlock Text="Workspace"
+                         FontSize="22" FontWeight="Bold" Foreground="#CDD6F4"/>
+              <TextBlock Text="Manage projects and browse artifacts."
+                         Foreground="#585B70"/>
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBox Text="{Binding Workspace.NewProjectName}"
+                         Watermark="New project name..."
+                         Width="240"
+                         Background="#313244" Foreground="#CDD6F4"
+                         CaretBrush="#CBA6F7"/>
+                <Button Content="Create Project"
+                        Command="{Binding Workspace.CreateProjectCommand}"
+                        Background="#CBA6F7" Foreground="#1E1E2E"
+                        Padding="12,6"/>
+                <Button Content="Delete"
+                        Command="{Binding Workspace.DeleteProjectCommand}"
+                        Background="#313244" Foreground="#F38BA8"
+                        Padding="10,6"/>
+              </StackPanel>
+              <TextBlock Text="{Binding Workspace.StatusMessage}"
+                         Foreground="#A6ADC8" FontSize="12"/>
+            </StackPanel>
+
+            <Grid Grid.Row="1" ColumnDefinitions="240,*">
+              <!-- Project list -->
+              <Border Grid.Column="0"
+                      Background="#181825" CornerRadius="6"
+                      Margin="0,0,12,0">
+                <DockPanel Margin="8">
+                  <TextBlock DockPanel.Dock="Top"
+                             Text="PROJECTS"
+                             Foreground="#585B70" FontSize="10" FontWeight="Bold"
+                             Margin="4,0,0,8"/>
+                  <ListBox ItemsSource="{Binding Workspace.Projects}"
+                           SelectedItem="{Binding Workspace.SelectedProject}"
+                           Background="Transparent">
+                    <ListBox.ItemTemplate>
+                      <DataTemplate>
+                        <TextBlock Text="{Binding Name}"
+                                   Foreground="#CDD6F4" Margin="4,2"/>
+                      </DataTemplate>
+                    </ListBox.ItemTemplate>
+                  </ListBox>
+                </DockPanel>
+              </Border>
+
+              <!-- Artifact list -->
+              <Border Grid.Column="1"
+                      Background="#181825" CornerRadius="6">
+                <DockPanel Margin="8">
+                  <TextBlock DockPanel.Dock="Top"
+                             Text="ARTIFACTS"
+                             Foreground="#585B70" FontSize="10" FontWeight="Bold"
+                             Margin="4,0,0,8"/>
+                  <ListBox ItemsSource="{Binding Workspace.Artifacts}"
+                           Background="Transparent">
+                    <ListBox.ItemTemplate>
+                      <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Spacing="8" Margin="4,2">
+                          <TextBlock Text="{Binding Type}"
+                                     Foreground="#CBA6F7" Width="100" FontSize="11"/>
+                          <TextBlock Text="{Binding Name}"
+                                     Foreground="#CDD6F4" FontSize="11"/>
+                        </StackPanel>
+                      </DataTemplate>
+                    </ListBox.ItemTemplate>
+                  </ListBox>
+                </DockPanel>
+              </Border>
+            </Grid>
+          </Grid>
+        </TabItem>
+
+        <!-- ═══════════════════════════════════════════════ APK LAB -->
+        <TabItem Header="APK Lab">
+          <StackPanel Margin="24" Spacing="14">
+            <TextBlock Text="APK Lab"
+                       FontSize="22" FontWeight="Bold" Foreground="#CDD6F4"/>
+            <TextBlock Text="Decompile · Edit · Rebuild · Sign"
+                       Foreground="#585B70"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <TextBox Text="{Binding ApkLab.LoadedApkPath}"
+                       Watermark="APK path..."
+                       Width="400"
+                       Background="#313244" Foreground="#CDD6F4"
+                       CaretBrush="#CBA6F7"/>
+              <Button Content="Open APK..."
+                      Command="{Binding ApkLab.OpenApkCommand}"
+                      Background="#313244" Foreground="#CDD6F4"
+                      Padding="12,6"/>
+            </StackPanel>
+            <TextBlock Text="{Binding ApkLab.StatusMessage}"
+                       Foreground="#A6ADC8" FontSize="12"/>
+            <ProgressBar Value="{Binding ApkLab.DecompileProgress}"
+                         Maximum="1"
+                         IsVisible="{Binding ApkLab.IsDecompiling}"
+                         Height="4"
+                         Foreground="#CBA6F7" Background="#313244"/>
+          </StackPanel>
+        </TabItem>
+
+        <!-- ═══════════════════════════════════════════════ FIRMWARE LAB -->
+        <TabItem Header="Firmware Lab">
+          <StackPanel Margin="24" Spacing="14">
+            <TextBlock Text="Firmware Lab"
+                       FontSize="22" FontWeight="Bold" Foreground="#CDD6F4"/>
+            <TextBlock Text="Unpack and inspect system images, boot images, and APEX modules."
+                       Foreground="#585B70"/>
+            <TextBox Text="{Binding FirmwareLab.ImagePath}"
+                     Watermark="Image path (system.img, boot.img, .apex...)"
+                     Width="480"
+                     Background="#313244" Foreground="#CDD6F4"
+                     CaretBrush="#CBA6F7"
+                     HorizontalAlignment="Left"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <TextBlock Text="Image type:"
+                         Foreground="#A6ADC8" VerticalAlignment="Center"/>
+              <ComboBox ItemsSource="{Binding FirmwareLab.ImageTypes}"
+                        SelectedItem="{Binding FirmwareLab.SelectedType}"
+                        Background="#313244" Foreground="#CDD6F4"
+                        Width="140"/>
+              <Button Content="Unpack"
+                      Command="{Binding FirmwareLab.UnpackCommand}"
+                      Background="#A6E3A1" Foreground="#1E1E2E"
+                      Padding="14,6" FontWeight="Bold"/>
+            </StackPanel>
+            <TextBlock Text="{Binding FirmwareLab.StatusMessage}"
+                       Foreground="#A6ADC8" FontSize="12"/>
+            <ProgressBar Value="{Binding FirmwareLab.Progress}"
+                         Maximum="1"
+                         IsVisible="{Binding FirmwareLab.IsUnpacking}"
+                         Height="4"
+                         Foreground="#A6E3A1" Background="#313244"/>
+            <TextBlock Text="{Binding FirmwareLab.OutputDir}"
+                       Foreground="#585B70" FontSize="11"/>
+            <TextBlock Text="Tools needed: tools/7zip/7z.exe  |  tools/magiskboot/magiskboot.exe for boot images"
+                       Foreground="#45475A" FontSize="11" FontStyle="Italic"/>
+          </StackPanel>
+        </TabItem>
+
+        <!-- ═══════════════════════════════════════════════ ANALYZER -->
+        <TabItem Header="Analyzer">
+          <Grid RowDefinitions="Auto,*" Margin="20">
+            <StackPanel Grid.Row="0" Spacing="10" Margin="0,0,0,12">
+              <TextBlock Text="Analyzer"
+                         FontSize="22" FontWeight="Bold" Foreground="#CDD6F4"/>
+              <TextBlock Text="Static analysis of decompiled APK output — permissions, classes, flagged strings."
+                         Foreground="#585B70"/>
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBox Text="{Binding Analyzer.DecompiledDir}"
+                         Watermark="Path to decompiled APK directory..."
+                         Width="480"
+                         Background="#313244" Foreground="#CDD6F4"
+                         CaretBrush="#CBA6F7"/>
+                <Button Content="Analyze"
+                        Command="{Binding Analyzer.AnalyzeCommand}"
+                        Background="#89B4FA" Foreground="#1E1E2E"
+                        Padding="14,6" FontWeight="Bold"/>
+                <Button Content="Cancel"
+                        Command="{Binding Analyzer.CancelCommand}"
+                        Background="#313244" Foreground="#CDD6F4"
+                        Padding="10,6"/>
+              </StackPanel>
+              <TextBlock Text="{Binding Analyzer.StatusMessage}"
+                         Foreground="#A6ADC8" FontSize="12"/>
+              <Border Background="#313244" CornerRadius="4" Padding="10,8">
+                <TextBlock Text="{Binding Analyzer.PackageInfo}"
+                           Foreground="#CDD6F4"
+                           FontFamily="Consolas,Courier New,monospace"
+                           FontSize="12"/>
+              </Border>
+            </StackPanel>
+
+            <TabControl Grid.Row="1"
+                        SelectedIndex="{Binding Analyzer.ActiveSubTab}"
+                        Background="#181825">
+              <TabItem Header="Permissions">
+                <ListBox ItemsSource="{Binding Analyzer.Permissions}"
+                         Background="Transparent">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding}"
+                                 Foreground="#FAB387"
+                                 FontFamily="Consolas,Courier New,monospace"
+                                 FontSize="11" Margin="4,2"/>
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+              </TabItem>
+              <TabItem Header="Classes">
+                <ListBox ItemsSource="{Binding Analyzer.Classes}"
+                         Background="Transparent">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding}"
+                                 Foreground="#89DCEB"
+                                 FontFamily="Consolas,Courier New,monospace"
+                                 FontSize="11" Margin="4,2"/>
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+              </TabItem>
+              <TabItem Header="Flagged Strings">
+                <ListBox ItemsSource="{Binding Analyzer.InterestingStrings}"
+                         Background="Transparent">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding}"
+                                 Foreground="#F38BA8"
+                                 FontFamily="Consolas,Courier New,monospace"
+                                 FontSize="11" Margin="4,2"/>
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+              </TabItem>
+              <TabItem Header="Components">
+                <ListBox ItemsSource="{Binding Analyzer.Components}"
+                         Background="Transparent">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding}"
+                                 Foreground="#A6E3A1"
+                                 FontFamily="Consolas,Courier New,monospace"
+                                 FontSize="11" Margin="4,2"/>
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+              </TabItem>
+            </TabControl>
+          </Grid>
+        </TabItem>
+
+        <!-- ═══════════════════════════════════════════════ DEVICE BRIDGE -->
+        <TabItem Header="Device Bridge">
+          <Grid RowDefinitions="Auto,*" Margin="20">
+            <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,12">
+              <TextBlock Text="Device Bridge"
+                         FontSize="22" FontWeight="Bold" Foreground="#CDD6F4"/>
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="{Binding DeviceBridge.StatusMessage}"
+                           Foreground="#A6ADC8" FontSize="12"
+                           VerticalAlignment="Center"/>
+                <Button Content="Refresh"
+                        Command="{Binding DeviceBridge.RefreshCommand}"
+                        Background="#313244" Foreground="#CDD6F4"
+                        Padding="10,4"/>
+              </StackPanel>
+            </StackPanel>
+
+            <Grid Grid.Row="1" ColumnDefinitions="200,*">
+              <!-- Device list -->
+              <Border Grid.Column="0"
+                      Background="#181825" CornerRadius="6"
+                      Margin="0,0,12,0">
+                <DockPanel Margin="8">
+                  <TextBlock DockPanel.Dock="Top"
+                             Text="DEVICES"
+                             Foreground="#585B70" FontSize="10" FontWeight="Bold"
+                             Margin="4,0,0,8"/>
+                  <ListBox ItemsSource="{Binding DeviceBridge.Devices}"
+                           SelectedItem="{Binding DeviceBridge.SelectedDevice}"
+                           Background="Transparent">
+                    <ListBox.ItemTemplate>
+                      <DataTemplate>
+                        <StackPanel Margin="4,4" Spacing="2">
+                          <TextBlock Text="{Binding Serial}"
+                                     Foreground="#CDD6F4"
+                                     FontSize="12" FontWeight="Bold"/>
+                          <TextBlock Text="{Binding State}"
+                                     Foreground="#A6ADC8" FontSize="10"/>
+                          <TextBlock Text="{Binding Model}"
+                                     Foreground="#585B70" FontSize="10"/>
+                        </StackPanel>
+                      </DataTemplate>
+                    </ListBox.ItemTemplate>
+                  </ListBox>
+                </DockPanel>
+              </Border>
+
+              <!-- Shell + Logcat tabs -->
+              <TabControl Grid.Column="1" Background="#181825">
+                <TabItem Header="ADB Shell">
+                  <Grid RowDefinitions="*,Auto" Margin="8">
+                    <Border Grid.Row="0"
+                            Background="#11111B" CornerRadius="4"
+                            Margin="0,0,0,8">
+                      <ScrollViewer>
+                        <TextBlock Text="{Binding DeviceBridge.CommandOutput}"
+                                   Foreground="#A6E3A1"
+                                   FontFamily="Consolas,Courier New,monospace"
+                                   FontSize="11" Margin="8"/>
+                      </ScrollViewer>
+                    </Border>
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8">
+                      <TextBox Text="{Binding DeviceBridge.CommandInput}"
+                               Watermark="shell command..."
+                               Width="400"
+                               Background="#313244" Foreground="#CDD6F4"
+                               CaretBrush="#CBA6F7"
+                               FontFamily="Consolas,Courier New,monospace"/>
+                      <Button Content="Run"
+                              Command="{Binding DeviceBridge.RunCommandCommand}"
+                              Background="#CBA6F7" Foreground="#1E1E2E"
+                              Padding="14,6" FontWeight="Bold"/>
+                      <Button Content="Clear"
+                              Command="{Binding DeviceBridge.ClearCommand}"
+                              Background="#313244" Foreground="#CDD6F4"
+                              Padding="10,6"/>
+                    </StackPanel>
+                  </Grid>
+                </TabItem>
+
+                <TabItem Header="Logcat">
+                  <Grid RowDefinitions="*,Auto" Margin="8">
+                    <Border Grid.Row="0"
+                            Background="#11111B" CornerRadius="4"
+                            Margin="0,0,0,8">
+                      <ScrollViewer>
+                        <ItemsControl ItemsSource="{Binding DeviceBridge.LogcatLines}">
+                          <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                              <TextBlock Text="{Binding}"
+                                         Foreground="#A6ADC8"
+                                         FontFamily="Consolas,Courier New,monospace"
+                                         FontSize="10" Margin="8,1"/>
+                            </DataTemplate>
+                          </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                      </ScrollViewer>
+                    </Border>
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8">
+                      <Button Content="Start Logcat"
+                              Command="{Binding DeviceBridge.StartLogcatCommand}"
+                              Background="#A6E3A1" Foreground="#1E1E2E"
+                              Padding="14,6" FontWeight="Bold"/>
+                      <Button Content="Stop"
+                              Command="{Binding DeviceBridge.StopLogcatCommand}"
+                              Background="#F38BA8" Foreground="#1E1E2E"
+                              Padding="14,6" FontWeight="Bold"/>
+                      <Button Content="Clear"
+                              Command="{Binding DeviceBridge.ClearCommand}"
+                              Background="#313244" Foreground="#CDD6F4"
+                              Padding="10,6"/>
+                    </StackPanel>
+                  </Grid>
+                </TabItem>
+              </TabControl>
+            </Grid>
+          </Grid>
+        </TabItem>
+
+      </TabControl>
+    </Grid>
+
+    <!-- Log panel -->
+    <Border Grid.Row="2"
+            Background="#11111B"
+            BorderBrush="#313244"
+            BorderThickness="0,1,0,0">
+      <DockPanel>
+        <TextBlock DockPanel.Dock="Top"
+                   Text="ENGINE LOG"
+                   Foreground="#585B70" Margin="12,6"
+                   FontSize="10" FontWeight="Bold"/>
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+          <ItemsControl ItemsSource="{Binding LogEntries}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:LogLineViewModel">
+                <TextBlock Text="{Binding Text}"
+                           Foreground="#A6E3A1"
+                           FontFamily="Consolas,Courier New,monospace"
+                           FontSize="11" Margin="12,1"/>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+      </DockPanel>
+    </Border>
+
+  </Grid>
+</Window>

@@ -1,0 +1,30 @@
+﻿# Build outputs
+bin/
+obj/
+
+# Publish output
+publish/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider
+.idea/
+
+# Avalonia / Fody
+FodyWeavers.xsd
+
+# .NET
+*.swp
+*.DS_Store
+
+# AES runtime tools (binaries — copy manually, do not commit)
+tools/platform-tools/adb.exe
+tools/platform-tools/fastboot.exe
+
+# Logs
+*.log
