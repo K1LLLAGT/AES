@@ -45,7 +45,7 @@ jobs:
         run: dotnet build ${{ env.SOLUTION }} --configuration Release --no-restore
 
       - name: Run xUnit tests
-        run: dotnet test ${{ env.TEST_PROJECT }} --configuration Debug --no-build --logger "trx;LogFileName=results.trx" --results-directory TestResults
+        run: dotnet test ${{ env.TEST_PROJECT }} --configuration Release --no-build --logger "trx;LogFileName=results.trx" --results-directory TestResults
 
       - name: Upload test results
         if: always()
