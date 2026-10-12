@@ -30,4 +30,22 @@
     <ProjectReference Include="..\AES.Modules.Analyzer\AES.Modules.Analyzer.csproj" />
     <ProjectReference Include="..\AES.Modules.Workspace\AES.Modules.Workspace.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\tools\platform-tools\adb.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <Link>tools\platform-tools\adb.exe</Link>
+    </Content>
+    <Content Include="..\..\tools\platform-tools\fastboot.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <Link>tools\platform-tools\fastboot.exe</Link>
+    </Content>
+  </ItemGroup>
+
 </Project>
+
+
+
