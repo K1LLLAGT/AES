@@ -1,0 +1,74 @@
+﻿name: AES CI - Build, Test and Publish
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    env:
+      SOLUTION: AES.sln
+      UI_PROJECT: src\AES.UI\AES.UI.csproj
+      TEST_PROJECT: src\AES.Tests\AES.Tests.csproj
+      PUBLISH_OUTPUT: publish\win-x64
+      DOTNET_VERSION: 8.0.x
+      RID: win-x64
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Download Android Platform Tools
+        shell: pwsh
+        run: |
+          $url  = "https://dl.google.com/android/repository/platform-tools-latest-windows.zip"
+          $zip  = "$env:RUNNER_TEMP\platform-tools.zip"
+          $dest = "tools"
+          Invoke-WebRequest -Uri $url -OutFile $zip
+          Expand-Archive -Path $zip -DestinationPath $dest
+          Write-Host "adb.exe present: $(Test-Path 'tools\platform-tools\adb.exe')"
+          Write-Host "fastboot.exe present: $(Test-Path 'tools\platform-tools\fastboot.exe')"
+
+      - name: Restore NuGet packages
+        run: dotnet restore ${{ env.SOLUTION }}
+
+      - name: Build Release
+        run: dotnet build ${{ env.SOLUTION }} --configuration Release --no-restore
+
+      - name: Run xUnit tests
+        run: dotnet test ${{ env.TEST_PROJECT }} --configuration Debug --no-build --logger "trx;LogFileName=results.trx" --results-directory TestResults
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults\*.trx
+
+      - name: Publish self-contained exe
+        run: dotnet publish ${{ env.UI_PROJECT }} --configuration Release --runtime ${{ env.RID }} --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true --output ${{ env.PUBLISH_OUTPUT }}
+
+      - name: Verify ADB copied into publish output
+        shell: pwsh
+        run: |
+          $adb      = Test-Path "${{ env.PUBLISH_OUTPUT }}\tools\platform-tools\adb.exe"
+          $fastboot = Test-Path "${{ env.PUBLISH_OUTPUT }}\tools\platform-tools\fastboot.exe"
+          Write-Host "adb.exe in publish: $adb"
+          Write-Host "fastboot.exe in publish: $fastboot"
+          if (-not $adb -or -not $fastboot) { exit 1 }
+
+      - name: Upload publish artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AES-win-x64
+          path: ${{ env.PUBLISH_OUTPUT }}\
+          if-no-files-found: error
